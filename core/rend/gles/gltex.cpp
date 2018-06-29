@@ -450,73 +450,10 @@ GLuint gl_GetTexture(TSP tsp, TCW tcw)
 		return fb_rtt.tex;
 	}
 
-<<<<<<< HEAD
 	//lookup texture
 	TextureCacheData* tf;
 	//= TexCache.Find(tcw.full,tsp.full);
 	u64 key=((u64)tcw.full<<32) | tsp.full;
-=======
-    //dumpRtTexture(fb_rtt.TexAddr, w, h);
-    
-    if (w > 1024 || h > 1024) {
-    	glcache.DeleteTextures(1, &fb_rtt.tex);
-    }
-    else
-    {
-    	TCW tcw = { { TexAddr : fb_rtt.TexAddr, Reserved : 0, StrideSel : 0, ScanOrder : 1 } };
-    	switch (fb_packmode) {
-    	case 0:
-    	case 3:
-    		tcw.PixelFmt = 0;
-    		break;
-    	case 1:
-    		tcw.PixelFmt = 1;
-    		break;
-    	case 2:
-    		tcw.PixelFmt = 2;
-    		break;
-    	}
-    	TSP tsp = { 0 };
-    	for (tsp.TexU = 0; tsp.TexU <= 7 && (8 << tsp.TexU) < w; tsp.TexU++);
-    	for (tsp.TexV = 0; tsp.TexV <= 7 && (8 << tsp.TexV) < h; tsp.TexV++);
-
-    	if (8 << tsp.TexU != w)
-    		tcw.StrideSel = 1;
-
-    	TextureCacheData *texture_data = getTextureCacheData(tsp, tcw);
-    	if (texture_data->texID != 0)
-    		glcache.DeleteTextures(1, &texture_data->texID);
-    	else {
-    		texture_data->Create(false);
-    		texture_data->lock_block = libCore_vramlock_Lock(texture_data->sa_tex, texture_data->sa + texture_data->size - 1, texture_data);
-    	}
-    	texture_data->texID = fb_rtt.tex;
-    	texture_data->dirty = 0;
-    }
-    fb_rtt.tex = 0;
-
-	if (fb_rtt.fbo) { glDeleteFramebuffers(1,&fb_rtt.fbo); fb_rtt.fbo = 0; }
-	if (fb_rtt.depthb) { glDeleteRenderbuffers(1,&fb_rtt.depthb); fb_rtt.depthb = 0; }
-	if (fb_rtt.stencilb) { glDeleteRenderbuffers(1,&fb_rtt.stencilb); fb_rtt.stencilb = 0; }
-
-}
-
-static int TexCacheLookups;
-static int TexCacheHits;
-static float LastTexCacheStats;
-
-// Only use TexU and TexV from TSP in the cache key
-const TSP TSPTextureCacheMask = { { TexV : 7, TexU : 7 } };
-const TCW TCWTextureCacheMask = { { TexAddr : 0x1FFFFF, Reserved : 0, StrideSel : 1, ScanOrder : 1, PixelFmt : 7, VQ_Comp : 1, MipMapped : 1 } };
-
-TextureCacheData *getTextureCacheData(TSP tsp, TCW tcw) {
-	u64 key = tsp.full & TSPTextureCacheMask.full;
-	if (tcw.PixelFmt == 5 || tcw.PixelFmt == 6)
-		// Paletted textures have a palette selection that must be part of the key
-		key |= (u64)tcw.full << 32;
-	else
-		key |= (u64)(tcw.full & TCWTextureCacheMask.full) << 32;
->>>>>>> 7ecd3846... StrideSel is now part of the texture cache and must be set by RTT
 
 	TexCacheIter tx=TexCache.find(key);
 
