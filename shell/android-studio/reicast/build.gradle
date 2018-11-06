@@ -31,7 +31,7 @@ android {
     defaultConfig {
         applicationId "com.reicast.emulator"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode getBuildId()
         versionName getVersionName()
         vectorDrawables.useSupportLibrary = true
