@@ -1104,13 +1104,6 @@ bool gles_init()
 	return true;
 }
 
-bool isExtensionSupported(const char * name) {
-	if (!strstr((const char *)glGetString(GL_EXTENSIONS), name)) {
-		return false;
-	}
-	return true;
-}
-
 float fog_coefs[]={0,0};
 void tryfit(float* x,float* y)
 {
@@ -1539,7 +1532,7 @@ void OSD_DRAW()
 #endif
 }
 
-void fullscreenQuadCreateTemporaryFBO(float &screenToNativeX, float &screenToNativeY) {
+void fullscreenQuadCreateTemporaryFBO(float & screenToNativeXScale, float & screenToNativeY) {
 	// Generate and bind a render buffer which will become a depth buffer
 	if (!fullscreenQuad.framebufferRenderbuffer) {
 		glGenRenderbuffers(1, &fullscreenQuad.framebufferRenderbuffer);
@@ -1587,7 +1580,7 @@ void fullscreenQuadCreateTemporaryFBO(float &screenToNativeX, float &screenToNat
 		glBindFramebuffer(GL_FRAMEBUFFER, fullscreenQuad.framebuffer);
 	}
 
-	glViewport(0, 0, screen_width * screenToNativeX, screen_height * screenToNativeY);
+	glViewport(0, 0, screen_width * screenToNativeXScale, screen_height * screenToNativeY);
 }
 
 bool ProcessFrame(TA_context* ctx)

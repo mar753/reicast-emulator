@@ -163,5 +163,3 @@ void InitShadowCircle();
 bool CompilePipelineShader(PipelineShader* s);
 #define TEXTURE_LOAD_ERROR 0
 GLuint loadPNG(const string& subpath, int &width, int &height);
-
-void SetupMainVBO();
