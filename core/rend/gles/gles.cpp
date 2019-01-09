@@ -1983,15 +1983,23 @@ bool RenderFrame()
 		printf("SCI: %d, %f\n", pvrrc.fb_X_CLIP.max, dc2s_scale_h);
 		printf("SCI: %f, %f, %f, %f\n", offs_x+pvrrc.fb_X_CLIP.min/scale_x,(pvrrc.fb_Y_CLIP.min/scale_y)*dc2s_scale_h,(pvrrc.fb_X_CLIP.max-pvrrc.fb_X_CLIP.min+1)/scale_x*dc2s_scale_h,(pvrrc.fb_Y_CLIP.max-pvrrc.fb_Y_CLIP.min+1)/scale_y*dc2s_scale_h);
 	#endif
-
-	if (settings.rend.VerticalResolution == 100 && settings.rend.HorizontalResolution == 100) {
-		glScissor(offs_x+pvrrc.fb_X_CLIP.min/scale_x,(pvrrc.fb_Y_CLIP.min/scale_y)*dc2s_scale_h,(pvrrc.fb_X_CLIP.max-pvrrc.fb_X_CLIP.min+1)/scale_x*dc2s_scale_h,(pvrrc.fb_Y_CLIP.max-pvrrc.fb_Y_CLIP.min+1)/scale_y*dc2s_scale_h);
-		if (settings.rend.WideScreen && pvrrc.fb_X_CLIP.min==0 && ((pvrrc.fb_X_CLIP.max+1)/scale_x==640) && (pvrrc.fb_Y_CLIP.min==0) && ((pvrrc.fb_Y_CLIP.max+1)/scale_y==480 ) )
+	
+	if (is_rtt || (settings.rend.VerticalResolution == 100 && settings.rend.HorizontalResolution == 100)) {
+		glScissor(offs_x + pvrrc.fb_X_CLIP.min / scale_x,
+			  (pvrrc.fb_Y_CLIP.min / scale_y) * dc2s_scale_h,
+			  (pvrrc.fb_X_CLIP.max - pvrrc.fb_X_CLIP.min + 1) / scale_x * dc2s_scale_h,
+			  (pvrrc.fb_Y_CLIP.max - pvrrc.fb_Y_CLIP.min + 1) / scale_y * dc2s_scale_h);
+		if (settings.rend.WideScreen && pvrrc.fb_X_CLIP.min == 0 &&
+		    ((pvrrc.fb_X_CLIP.max + 1) / scale_x == 640) &&
+		    (pvrrc.fb_Y_CLIP.min == 0) &&
+		    ((pvrrc.fb_Y_CLIP.max + 1) / scale_y == 480 ))
 		{
 			glDisable(GL_SCISSOR_TEST);
 		}
-		else
+	   	else
+		{
 			glEnable(GL_SCISSOR_TEST);
+		}
 	}
 
 	//restore scale_x
