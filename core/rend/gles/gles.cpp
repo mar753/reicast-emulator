@@ -400,14 +400,17 @@ const char * FullscreenQuadVertexShader =
 	}";
 
 const char * FullscreenQuadFragmentShader =
-	"precision mediump float;\n\
-	uniform sampler2D s_texture;\n\
+#ifdef GLES
+	"precision mediump float; \n"
+#endif
+	"\
+	uniform sampler2D s_texture; \n\
 	\n\
-	varying vec2 v_texcoord;\n\
+	varying vec2 v_texcoord; \n\
 	\n\
-	void main()\n\
-	{\n\
-	    gl_FragColor = texture2D(s_texture, v_texcoord.st);\n\
+	void main() \n\
+	{ \n\
+	    gl_FragColor = texture2D(s_texture, v_texcoord.st); \n\
 	}";
 
 gl_ctx gl;
