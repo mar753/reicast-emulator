@@ -1,4 +1,4 @@
-reicast
+reicast (mar753's custom branch for Android with RTT, lowering rendering resolution and clipping)
 ===========
 reicast is a multi-platform Sega Dreamcast emulator.
 
