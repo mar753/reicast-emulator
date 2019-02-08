@@ -418,6 +418,9 @@ gl_ctx gl;
 int screen_width;
 int screen_height;
 
+int currentScreenWidth = -1;
+int currentScreenHeight = -1;
+
 GLFramebufferData fullscreenQuad;
 
 bool isExtensionSupported(const char * name) {
@@ -1540,19 +1543,20 @@ void fullscreenQuadCreateTemporaryFBO(float & screenToNativeXScale, float & scre
 	// Generate and bind a render buffer which will become a depth buffer
 	if (!fullscreenQuad.framebufferRenderbuffer) {
 		glGenRenderbuffers(1, &fullscreenQuad.framebufferRenderbuffer);
+	}
+	if (currentScreenWidth != screen_width || currentScreenHeight != screen_height) {
+
 		glBindRenderbuffer(GL_RENDERBUFFER, fullscreenQuad.framebufferRenderbuffer);
 #ifdef GLES
 		if (isExtensionSupported("GL_OES_packed_depth_stencil")) {
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, screen_width, screen_height);
-		}
-		else if (isExtensionSupported("GL_OES_depth24")) {
+		} else if (isExtensionSupported("GL_OES_depth24")) {
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24_OES, screen_width, screen_height);
-		}
-		else {
+		} else {
 			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, screen_width, screen_height);
 		}
 #else
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, screen_width, screen_height);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screen_width, screen_height);
 #endif
 	}
 
@@ -1564,6 +1568,10 @@ void fullscreenQuadCreateTemporaryFBO(float & screenToNativeXScale, float & scre
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screen_width, screen_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	}
+	if (currentScreenWidth != screen_width || currentScreenHeight != screen_height) {
+		glBindTexture(GL_TEXTURE_2D, fullscreenQuad.framebufferTexture);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, screen_width, screen_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	}
 
@@ -1947,6 +1955,8 @@ bool RenderFrame()
 		}
 		else {
 			fullscreenQuadCreateTemporaryFBO(screenToNativeXScale, screenToNativeYScale);
+			currentScreenWidth = screen_width;
+			currentScreenHeight = screen_height;
 		}
 #endif
 	}
