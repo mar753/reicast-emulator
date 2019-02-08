@@ -1797,7 +1797,12 @@ bool RenderFrame()
 		Handle Dc to screen scaling
 	*/
 	float dc2s_scale_h = screen_height / 480.0;
+
 	float ds2s_offs_x = (screen_width - dc2s_scale_h * 640.0) / 2;
+	// handle odd screen width
+	if (screen_width % 2) {
+		ds2s_offs_x = (screen_width + 1 - dc2s_scale_h * 640.0) / 2;
+	}
 
 	if (!is_rtt) {
 		ShaderUniforms.scale_coefs[0] = 2.0f / (screen_width / dc2s_scale_h * scale_x);
@@ -2005,12 +2010,21 @@ bool RenderFrame()
 		printf("SCI: %d, %f\n", pvrrc.fb_X_CLIP.max, dc2s_scale_h);
 		printf("SCI: %f, %f, %f, %f\n", offs_x+pvrrc.fb_X_CLIP.min/scale_x,(pvrrc.fb_Y_CLIP.min/scale_y)*dc2s_scale_h,(pvrrc.fb_X_CLIP.max-pvrrc.fb_X_CLIP.min+1)/scale_x*dc2s_scale_h,(pvrrc.fb_Y_CLIP.max-pvrrc.fb_Y_CLIP.min+1)/scale_y*dc2s_scale_h);
 	#endif
-	
+
 	if (is_rtt || (settings.rend.VerticalResolution == 100 && settings.rend.HorizontalResolution == 100)) {
-		glScissor(offs_x + pvrrc.fb_X_CLIP.min / scale_x,
-			  (pvrrc.fb_Y_CLIP.min / scale_y) * dc2s_scale_h,
-			  (pvrrc.fb_X_CLIP.max - pvrrc.fb_X_CLIP.min + 1) / scale_x * dc2s_scale_h,
-			  (pvrrc.fb_Y_CLIP.max - pvrrc.fb_Y_CLIP.min + 1) / scale_y * dc2s_scale_h);
+		// handle odd/even screen width
+		if (screen_width % 2 == 0) {
+			glScissor(offs_x + pvrrc.fb_X_CLIP.min / scale_x,
+				(pvrrc.fb_Y_CLIP.min / scale_y) * dc2s_scale_h,
+				(pvrrc.fb_X_CLIP.max - pvrrc.fb_X_CLIP.min + 1) / scale_x * dc2s_scale_h,
+				(pvrrc.fb_Y_CLIP.max - pvrrc.fb_Y_CLIP.min + 1) / scale_y * dc2s_scale_h);
+		}
+		else {
+			glScissor(offs_x + pvrrc.fb_X_CLIP.min / scale_x,
+				(pvrrc.fb_Y_CLIP.min / scale_y) * dc2s_scale_h,
+				(pvrrc.fb_X_CLIP.max - pvrrc.fb_X_CLIP.min + 1) / scale_x * dc2s_scale_h - 1,
+				(pvrrc.fb_Y_CLIP.max - pvrrc.fb_Y_CLIP.min + 1) / scale_y * dc2s_scale_h);
+		}
 		if (settings.rend.WideScreen && pvrrc.fb_X_CLIP.min == 0 &&
 		    ((pvrrc.fb_X_CLIP.max + 1) / scale_x == 640) &&
 		    (pvrrc.fb_Y_CLIP.min == 0) &&
